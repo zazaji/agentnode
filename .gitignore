@@ -1,0 +1,88 @@
+# ============================================================
+# AgentNode — 仓库可见内容白名单与安全排除
+# 严格要求：只在 GitHub 上传 README.md（+ .gitignore 本身）。
+# Git 规则按顺序匹配、后面的规则优先生效，末尾白名单作最终裁决，
+# 因此即使误执行 git add . / git add -A，除白名单外也不会被跟踪。
+# ============================================================
+
+# ---- 敏感/机密：token、环境变量、密钥、凭据（绝不入库）----
+.env
+*.env
+.env.*
+.e2e-tokens.env
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+.ssh/
+.credentials
+.aws/
+.gcloud/
+.kube/
+*secret*
+*_token*
+token_*.txt
+.gh_token
+.github_token
+
+# ---- 本机部署敏感配置（含 worker_secret / token hash / peer token）----
+config.yaml
+config.yaml.bak
+config.local.yaml
+config.prod.yaml
+*.local.yaml
+service.env
+.envrc
+
+# ---- 虚拟环境 / Python 产物 ----
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.coverage.*
+*.egg-info/
+
+# ---- 构建 / 打包 / 部署物 ----
+build/
+dist/
+*.zip
+*.tar.gz
+*.whl
+node_modules/
+
+# ---- 运行时数据 / 日志 ----
+data/
+*.log
+serve.log
+notes/
+*.pid
+*.sock
+
+# ---- 编辑器 / 系统 / 临时 ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.tmp/
+*.tmp
+
+# ------------------------------------------------------------
+# 白名单（末尾生效，仅以下两项可被跟踪/上传）
+# ------------------------------------------------------------
+*
+!.gitignore
+!README.md
