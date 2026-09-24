@@ -20,8 +20,8 @@ def check_shell(cfg:AppConfig,p:Principal,command:str,super_mode:bool,delegated:
     if classify(command)=="R4": raise HTTPException(403,"destructive command requires explicit super_mode")
     # A request forwarded through the mesh (trace_id/hops present) is authorized
     # by the caller's mesh.delegate scope, not by shell.read/shell.write. The
-    # mesh-delegate account (node role) cannot otherwise hold shell.write:
-    # TESTING.md #14 requires two AgentNodes to delegate with a node token.
+    # mesh-delegate account (node role) cannot otherwise hold shell.write, so
+    # delegated work passes through this path instead.
     if delegated:
         if not p.allowed("mesh.delegate"): raise HTTPException(403,"delegated shell requires mesh.delegate")
         return

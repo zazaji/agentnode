@@ -162,11 +162,11 @@ The console now contains dedicated views for:
 - CDP browser targets/navigation;
 - history/usage/config/runtime/peers.
 
-### MCP conformance CI
+### MCP protocol surface
 
-`.github/workflows/mcp-conformance.yml` runs the official `@modelcontextprotocol/conformance` runner against an isolated loopback-only MCP fixture. The initialize scenario is a strict CI gate and the full active suite is captured as an artifact for visibility.
+`/mcp` (streamable HTTP) and MCP stdio share the same RBAC scopes as the REST API: unauthenticated posts are rejected (`401`) and unauthorized tool calls answer `isError` with `403 scope required: ...`. Protocol behavior is validated against the official `@modelcontextprotocol/conformance` scenario runner in the private project workspace (see `docs/MCP_CONFORMANCE.md`).
 
-The production `/mcp` endpoint continues to require Bearer authentication. The unauthenticated fixture exists only in `scripts/mcp_conformance_server.py` for protocol testing and binds to `127.0.0.1`.
+The production `/mcp` endpoint continues to require Bearer authentication.
 
 AgentNode's current production authentication is static scoped Bearer tokens. Full OAuth 2.1 resource-server conformance is therefore intentionally tracked as a separate security milestone rather than being falsely claimed by the static-token mode.
 
@@ -215,15 +215,17 @@ AgentNode does **not** claim that allowed file roots sandbox a shell. Important 
 
 High-impact features are disabled by default when they expose an additional control plane (`browser.enabled`, `office.enabled`, `shell.allow_super_mode`). HTTP request bodies are bounded and Trusted Host validation is enabled. Remote deployments must add their DNS name/IP to `http.trusted_hosts`.
 
-## Testing
+## Building and validation
 
 ```bash
-pip install -e '.[dev,documents]'
-pytest -q
-python -m compileall -q src tests
+pip install -e '.[documents]'
+python -m compileall -q src
+python -m build --wheel
 ```
 
-See `TEST_REPORT.md`, `docs/ARCHITECTURE.md`, `docs/API.md`, and `docs/MCP_CONFORMANCE.md`.
+Unit/integration tests are run privately in the project workspace and are not
+published with the public repository. See `docs/ARCHITECTURE.md`, `docs/API.md`,
+and `docs/MCP_CONFORMANCE.md`.
 
 ## Attribution
 
@@ -231,4 +233,4 @@ Desktop Commander MCP is MIT licensed. AgentNode contains Python ports/reimpleme
 
 ## Version
 
-**3.2.1**
+**3.3.0**

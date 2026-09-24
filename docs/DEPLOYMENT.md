@@ -68,7 +68,7 @@ the whole fleet in one call.
 sudo ./scripts/install-linux.sh /opt/agentnode/config.yaml
 ```
 
-The systemd unit is hardened; privileged operations may require an intentional change of `User=`/capabilities. It starts at boot (`multi-user.target`), anchors a fixed `WorkingDirectory`, and reads mesh peer tokens from the optional `/etc/agentnode/service.env`. Use `scripts/smoke-posix.sh` after deployment.
+The systemd unit is hardened; privileged operations may require an intentional change of `User=`/capabilities. It starts at boot (`multi-user.target`), anchors a fixed `WorkingDirectory`, and reads mesh peer tokens from the optional `/etc/agentnode/service.env`. After deployment, verify with `curl http://127.0.0.1:8765/api/v1/health` and `systemctl is-active agentnode`.
 
 ## macOS
 

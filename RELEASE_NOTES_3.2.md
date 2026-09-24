@@ -25,7 +25,7 @@ The core node starts at machine boot on both platforms — no interactive logon 
 - **Windows**: `scripts/install-windows.ps1` registers `AgentNode` as a native service (`sc.exe create ... start= auto obj= LocalSystem`). A generated `run_core.py` changes to the app directory, loads `service.env` (mesh peer tokens / PATH), and captures logs to `serve.log`. The Desktop Worker remains a per-logon task because UI automation needs an interactive session; the core service itself needs none.
 - **Linux**: `scripts/install-linux.sh` registers a `multi-user.target` systemd unit with a fixed `WorkingDirectory` and optional `EnvironmentFile` for mesh peer tokens.
 
-See `docs/DEPLOYMENT.md` and `TEST_REPORT.md` for the full reboot-connectivity validation (win10 VM cold boot → node reachable, RBAC intact, bidirectional mesh delegate working).
+See `docs/DEPLOYMENT.md` for the full reboot-connectivity validation (win10 VM cold boot → node reachable, RBAC intact, bidirectional mesh delegate working).
 
 ## Upgrade from 3.1
 

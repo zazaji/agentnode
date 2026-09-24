@@ -38,6 +38,9 @@ service.env
 
 # ---- 测试代码（按约定不发布到 GitHub）----
 tests/
+# 测试方法论文档/报告（引用本机私有测试基建，外部不可复现，不随仓库发布）
+TEST_REPORT.md
+docs/TESTING.md
 scripts/acceptance_e2e.py
 scripts/mcp_conformance_server.py
 scripts/smoke-posix.sh

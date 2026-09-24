@@ -1,15 +1,15 @@
 # MCP Conformance
 
-AgentNode integrates the official `@modelcontextprotocol/conformance` framework in `.github/workflows/mcp-conformance.yml`.
+AgentNode serves MCP over HTTP and stdio. Protocol behavior is validated against the official `@modelcontextprotocol/conformance` scenario runner in the private project workspace; the runner and its loopback-only fixture are not published with the public repository.
 
-## CI strategy
+## Server posture
 
-- strict gate: official `server-initialize` scenario;
-- visibility job: complete current `active` server suite, saved as a workflow artifact;
-- the fixture in `scripts/mcp_conformance_server.py` is loopback-only and intentionally bypasses production Bearer authentication so protocol behavior can be measured independently.
+- `/mcp` (streamable HTTP) and MCP stdio use the same RBAC scopes as the REST API.
+- Unauthenticated posts are rejected (`401`); tool calls answer `isError` with `403 scope required: ...` when the caller lacks the scope.
+- CI (`ci.yml`) runs `compileall` on `src` and builds the wheel; it does not execute the conformance runner.
 
 Production `/mcp` remains authenticated.
 
 ## Authentication note
 
-AgentNode 3.2 production mode uses scoped static Bearer tokens. This is not represented as full OAuth 2.1 MCP resource-server conformance. A future OAuth/OIDC resource-server provider must add protected-resource metadata, audience-bound access-token validation and the associated official auth conformance suite before a Tier claim is made.
+AgentNode 3.2+ production mode uses scoped static Bearer tokens. This is not represented as full OAuth 2.1 MCP resource-server conformance. A future OAuth/OIDC resource-server provider must add protected-resource metadata, audience-bound access-token validation and the associated official auth conformance suite before a Tier claim is made.
