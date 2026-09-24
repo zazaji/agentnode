@@ -38,6 +38,22 @@ Terminal/Search   XLSX/DOCX/PDF   │
 
 On Windows the privileged service and interactive Desktop Worker stay separate because Session 0 must not be treated as the logged-in desktop.
 
+## Mesh coordination (3.2.1)
+
+AgentNode's 1:1 mesh delegation is extended with autonomous fleet coordination:
+
+- `POST /api/v1/mesh/coordinate` fans one task out to many peers (parallel or
+  sequential) and aggregates `{peer: {ok, trace_id, response|error}}`; unknown
+  peers are separated into `unknown`, and partial failures never fail the batch.
+- Coordination is recursive — any node with `mesh.delegate` can act as a
+  coordinator of coordinators — while `trace_id`/`hops` still guard against loops.
+- `agentnode mesh-coordinate --peer <name> ... --command 'cmd'` triggers a
+  coordinate directly from the CLI on the local node.
+
+Verified live: a 4-node fleet (debian + zjdebian10 + ser117 + win10), connected
+across NAT with direct LAN legs plus reverse-SSH tunnel legs, where one call from
+any node dispatches `hostname` to the rest and returns all results.
+
 ## New in 3.2
 
 ### Rich document plugin
@@ -140,7 +156,7 @@ AgentNode's current production authentication is static scoped Bearer tokens. Fu
 - Process and SCM/systemd/launchd service management.
 - Screenshot, Windows UIA, Win32 window control, input, OCR and clipboard.
 - Pi RPC Agent Runtime + configurable runtimes and LLM routing.
-- Agent Mesh with trace IDs, hop limits and loop prevention.
+- Agent Mesh with trace IDs, hop limits, loop prevention, and 1:N coordinate fan-out.
 - local stdio MCP + remote Streamable HTTP MCP + REST + Web Console.
 
 ## Quick start
@@ -188,4 +204,4 @@ Desktop Commander MCP is MIT licensed. AgentNode contains Python ports/reimpleme
 
 ## Version
 
-**3.2.0**
+**3.2.1**
