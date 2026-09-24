@@ -49,6 +49,8 @@ mesh:
     node-b:
       url: http://10.0.0.12:8765
       token_env: AGENTNODE_PEER_NODE_B_TOKEN
+      node_id: node-b   # the peer's mesh.node_id; relay loop-avoidance compares this
+      #   against the visited path (not the local peer key name)
 llm:
   providers:
     local:

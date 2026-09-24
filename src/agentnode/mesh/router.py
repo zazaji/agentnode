@@ -29,10 +29,17 @@ class MeshRouter:
         if req.forwards_left is not None: return req.forwards_left
         if req.policy and req.policy.max_forwards is not None: return req.policy.max_forwards
         return self.cfg.mesh.forward_policy.max_forwards
+    def _peer_node_id(self,name:str)->str:
+        # A peer may declare its node identity (peers.<name>.node_id). The visited
+        # path stores node_ids, so upstream checks must compare against that, not
+        # just the peer's local config key (a peer can be named anything).
+        return (self.cfg.mesh.peers.get(name) or {}).get('node_id') or name
+    def _is_upstream(self,name:str,path:list[str])->bool:
+        return name in path or self._peer_node_id(name) in path
     def _pick_target(self,mode:str,offload_after:int,path:list[str])->str|None:
         # Never pick a node already on the path: that node is upstream (a parent or
         # transitive ancestor) and handing the task back to it would start a loop.
-        candidates=[n for n in self.cfg.mesh.peers if n not in path]
+        candidates=[n for n in self.cfg.mesh.peers if not self._is_upstream(n,path)]
         if not candidates: return None
         if mode=='distribute':
             return min(candidates,key=lambda n:self._inflight.get(n,0))
@@ -86,7 +93,7 @@ class MeshRouter:
                 # Marked "do not re-transfer" with no explicit hand-off target: just run.
                 return await self._execute_local(req,path)
             if req.target:
-                if req.target in path:
+                if self._is_upstream(req.target,path):
                     raise ValueError(f'refusing to forward back to upstream node "{req.target}"')
                 return await self._forward_to(req,trace,path,req.target)
             if self._forwards_left(req)<=0:
@@ -119,7 +126,7 @@ class MeshRouter:
         unknown=[k for k in (req.peers or []) if k not in self.cfg.mesh.peers]
         # Exclude any node already on the path: subtasks (or a relayed context) may
         # never be handed back to an upstream node -- that would close a loop.
-        targets=[n for n in self.cfg.mesh.peers if n not in hops and (req.peers is None or n in req.peers)]
+        targets=[n for n in self.cfg.mesh.peers if not self._is_upstream(n,hops) and (req.peers is None or n in req.peers)]
         results={}
         async def one(name:str):
             try:

@@ -18,10 +18,15 @@
   the path are refused.
 - `agentnode mesh-forward` CLI subcommand (key, target, policy override,
   `--no-forwardable`); mesh relay endpoint `POST /api/v1/mesh/forward`.
-- 18 unit/integration tests for the relay feature; version surface updated to 3.3.0.
+- 21 unit/integration tests for the relay feature; version surface updated to 3.3.0.
+
+### Changed
+- Upstream exclusion compares the visited `hops` path against each peer's declared
+  `peers.<name>.node_id` (not its local config key). A peer can be named anything,
+  so loop-avoidance must recognise the node the peer *is* before handing a task
+  back to it. Live-fleet test caught the name/mismatch and it is fixed + regression-tested.
 
 ## 3.2.0
-
 ### Added
 - Rich document plugin: XLSX range read/write/create/append, DOCX read/create/replace, PDF read/merge.
 - Independent `document.read` / `document.write` scopes.

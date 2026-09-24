@@ -73,7 +73,9 @@ and tasks can be **handed off (转交)** between nodes under a configurable poli
 - **Loop avoidance:** every hop appends itself to `hops`; a forward target is
   never chosen from path members, so a task can never be handed back to its
   upstream node, and sub-tasks coordinated by a relayed node can never fan back
-  upstream either. An explicit target already on the path is refused.
+  upstream either. An explicit target already on the path is refused. Each peer
+  should declare `node_id` in its mesh entry so loop-avoidance compares node
+  identity, not the local peer config key.
 
 `agentnode mesh-forward --target <node> --command 'cmd'` triggers a hand-off from
 the CLI; `--no-forwardable` marks the task as not re-transferable and `--mode`
