@@ -1,8 +1,6 @@
 # ============================================================
-# AgentNode — 仓库可见内容白名单与安全排除
-# 严格要求：只在 GitHub 上传 README.md（+ .gitignore 本身）。
-# Git 规则按顺序匹配、后面的规则优先生效，末尾白名单作最终裁决，
-# 因此即使误执行 git add . / git add -A，除白名单外也不会被跟踪。
+# AgentNode — 安全排除规则
+# 只提交产品代码 + 编译产物（wheel/deb）；测试代码与敏感配置一律不传。
 # ============================================================
 
 # ---- 敏感/机密：token、环境变量、密钥、凭据（绝不入库）----
@@ -38,6 +36,15 @@ config.prod.yaml
 service.env
 .envrc
 
+# ---- 测试代码（按约定不发布到 GitHub）----
+tests/
+scripts/acceptance_e2e.py
+scripts/mcp_conformance_server.py
+scripts/smoke-posix.sh
+scripts/smoke-windows.ps1
+scripts/remote/e2e_mesh_matrix.py
+scripts/agentnode-repo.zip
+
 # ---- 虚拟环境 / Python 产物 ----
 .venv/
 venv/
@@ -53,21 +60,16 @@ htmlcov/
 .coverage.*
 *.egg-info/
 
-# ---- 构建 / 打包 / 部署物 ----
+# ---- 构建中间物 / 运行数据 / 日志 ----
 build/
-dist/
-*.zip
-*.tar.gz
-*.whl
-node_modules/
-
-# ---- 运行时数据 / 日志 ----
+dist/*.zip
 data/
 *.log
 serve.log
 notes/
 *.pid
 *.sock
+node_modules/
 
 # ---- 编辑器 / 系统 / 临时 ----
 .vscode/
@@ -79,10 +81,7 @@ notes/
 Thumbs.db
 .tmp/
 *.tmp
-
-# ------------------------------------------------------------
-# 白名单（末尾生效，仅以下两项可被跟踪/上传）
-# ------------------------------------------------------------
-*
-!.gitignore
-!README.md
+.zcode/
+config.yaml.bak-*
+.qwen/
+scripts/remote/configure.py

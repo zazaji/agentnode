@@ -54,6 +54,31 @@ Verified live: a 4-node fleet (debian + zjdebian10 + ser117 + win10), connected
 across NAT with direct LAN legs plus reverse-SSH tunnel legs, where one call from
 any node dispatches `hostname` to the rest and returns all results.
 
+## Task relay / auxiliary nodes (3.3.0)
+
+Nodes can act as **auxiliary (helper) nodes** gated by a configured shared key,
+and tasks can be **handed off (转交)** between nodes under a configurable policy:
+
+- `mesh.helper_key` — a node only serves `/api/v1/mesh/forward` when it holds the
+  shared key (sent in the `X-AgentNode-Helper-Key` header, constant-time
+  compared). No key configured → the node refuses to be a helper.
+- `mesh.forward_policy` — `mode: off|offload|distribute`:
+  - `offload` hands the task off to a helper when in-flight load exceeds
+    `offload_after`;
+  - `distribute` always picks the least-loaded available helper;
+  - `max_forwards` caps the relay budget (how many hops a task may take).
+- Per-task `forwardable: false` marks a task as **not re-transferable**: a node
+  that received it via relay always executes it locally; an origin that sets it
+  may still hand it off once with an explicit `target`.
+- **Loop avoidance:** every hop appends itself to `hops`; a forward target is
+  never chosen from path members, so a task can never be handed back to its
+  upstream node, and sub-tasks coordinated by a relayed node can never fan back
+  upstream either. An explicit target already on the path is refused.
+
+`agentnode mesh-forward --target <node> --command 'cmd'` triggers a hand-off from
+the CLI; `--no-forwardable` marks the task as not re-transferable and `--mode`
+overrides the relay policy for that task.
+
 ## New in 3.2
 
 ### Rich document plugin

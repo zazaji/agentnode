@@ -1,0 +1,83 @@
+host: 127.0.0.1
+port: 8765
+data_dir: data
+http:
+  max_request_bytes: 8000000
+  trusted_hosts: ["127.0.0.1", "localhost"]
+auth:
+  tokens:
+    operator:
+      hash: REPLACE_WITH_SHA256
+      role: operator
+    super:
+      hash: REPLACE_WITH_SHA256
+      role: super
+    node:
+      hash: REPLACE_WITH_SHA256
+      role: node
+shell:
+  default: auto
+  timeout_s: 120
+  output_limit: 2000000
+  allow_super_mode: false
+  blocked_fragments: ["agentnode token", "config.yaml"]
+files:
+  # Relative roots resolve from the service working directory (Windows service:
+  # C:\ProgramData\AgentNode via run_core.py chdir; systemd: WorkingDirectory=/var/lib/agentnode).
+  allowed_roots:
+    - .
+  max_read_bytes: 4000000
+  max_write_bytes: 8000000
+desktop:
+  enabled: true
+  ocr_provider: auto
+  screenshot_dir: data/screenshots
+  use_worker_on_windows: true
+  worker_pipe: "\\\\.\\pipe\\AgentNodeDesktop"
+  worker_secret: REPLACE_WITH_RANDOM_LOCAL_IPC_SECRET
+mesh:
+  node_id: ""
+  max_hops: 4
+  # Shared key that marks this node as an auxiliary (helper) node. Only nodes
+  # configured with this key may serve /api/v1/mesh/forward (task relay).
+  helper_key: ""
+  forward_policy:
+    mode: off            # off | offload | distribute
+    offload_after: 3     # offload: hand off when in-flight load exceeds N
+    max_forwards: 3      # relay budget: max forward hops for a task
+  peers:
+    node-b:
+      url: http://10.0.0.12:8765
+      token_env: AGENTNODE_PEER_NODE_B_TOKEN
+llm:
+  providers:
+    local:
+      type: openai-compatible
+      base_url: http://127.0.0.1:10003/v1
+      api_key_env: LOCAL_LLM_KEY
+  profiles:
+    reasoning:
+      provider: local
+      model: c_glm
+  routing:
+    planning: reasoning
+    computer_use: reasoning
+agent:
+  default_runtime: pi
+  runtimes:
+    pi:
+      enabled: false
+      executable: pi
+      env: {}
+
+browser:
+  enabled: false
+  cdp_url: http://127.0.0.1:9222
+  allow_remote: false
+  timeout_s: 15
+  max_snapshot_chars: 2000000
+  max_screenshot_bytes: 8000000
+office:
+  enabled: false
+  use_desktop_worker: true
+  allow_core_fallback: false
