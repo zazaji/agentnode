@@ -8,7 +8,7 @@ from .config import AppConfig
 EDITABLE={
     "shell.default", "shell.timeout_s", "shell.output_limit", "shell.allow_super_mode", "shell.blocked_fragments",
     "files.allowed_roots", "files.max_read_bytes", "files.max_write_bytes", "files.default_read_lines", "files.default_write_lines", "files.fuzzy_edit_min_similarity",
-    "desktop.enabled", "desktop.ocr_provider", "browser.enabled", "browser.cdp_url", "browser.allow_remote", "browser.timeout_s", "browser.max_snapshot_chars", "browser.max_screenshot_bytes", "office.enabled", "office.use_desktop_worker", "office.allow_core_fallback", "mesh.max_hops", "mesh.forward_policy.mode", "mesh.forward_policy.offload_after", "mesh.forward_policy.max_forwards", "agent.default_runtime",
+    "desktop.enabled", "desktop.ocr_provider", "browser.enabled", "browser.cdp_url", "browser.allow_remote", "browser.timeout_s", "browser.max_snapshot_chars", "browser.max_screenshot_bytes", "office.enabled", "office.use_desktop_worker", "office.allow_core_fallback", "mesh.max_hops", "mesh.forward_policy.mode", "mesh.forward_policy.offload_after", "mesh.forward_policy.max_forwards", "mesh.helper_key", "agent.default_runtime",
 }
 _LOCK=threading.RLock()
 

@@ -18,6 +18,16 @@
   the path are refused.
 - `agentnode mesh-forward` CLI subcommand (key, target, policy override,
   `--no-forwardable`); mesh relay endpoint `POST /api/v1/mesh/forward`.
+- Web Console runtime configuration editor: the Config tab renders a type-aware
+  editor (text/number/boolean/enum/secret fields) for every runtime-editable key,
+  marks restart-only settings (`host`, `port`, `data_dir`, `http.*`, `auth.*`,
+  `mesh.peers`, ...), and shows a redacted raw JSON view. Saving writes the YAML
+  atomically with a `.bak` snapshot and applies the change live without a restart.
+- `mesh.helper_key` is now runtime-editable (secret-masked in the view; a new key
+  takes effect immediately on relay gating). Invalid keys/values — including an
+  unknown `mesh.forward_policy.mode` — are rejected with 400 instead of accepted.
+- 6 config-editor unit/integration tests (redaction, round-trip persistence,
+  invalid 400s, RBAC scopes, live helper-key switch, console serving the editor).
 - 21 unit/integration tests for the relay feature; version surface updated to 3.3.0.
 
 ### Changed

@@ -1,4 +1,4 @@
-# AgentNode 3.2 Architecture
+# AgentNode 3.3 Architecture
 
 ## Principles
 
@@ -46,6 +46,9 @@ Three in-product coordination primitives:
 - `POST /api/v1/mesh/forward` — task relay (转交): hand one task off to an auxiliary (helper) node. The helper gate is `mesh.helper_key` (shared key, constant-time compared, sent in `X-AgentNode-Helper-Key`); a node without the key refuses to be a helper. Behaviour follows `mesh.forward_policy` (`off` keeps work local, `offload` hands off when in-flight load exceeds `offload_after`, `distribute` always picks the least-loaded helper) within a per-task relay budget (`forwards_left`, default from `max_forwards`). A task can be marked `forwardable: false` (not re-transferable): a node that received it via relay always executes locally, while an origin may still hand it off once with an explicit `target`. Loop avoidance is structural: every hop appends itself to `hops`, and both `_pick_target` and `coordinate`'s fan-out exclude every path member — a task (or any sub-task it coordinates) can never be handed back to an upstream node, and an explicit target already on the path is refused. Each hop's explicit `target` is consumed once; the downstream `ForwardRequest` carries `target: null` so the next node applies fresh policy. Path-member exclusion compares against each peer's declared `peers.<name>.node_id` (falling back to the config key), so upstream detection is by node identity, not by whatever local name the peer happens to be given.
 
 RBAC: all three endpoints require `mesh.delegate` — held by the `node` role (plus `administrator`/`super`), but not by the `operator` role, so a plain operator can steer servers but cannot push delegated work through the mesh without the node identity. `forward` additionally requires the helper key.
+
+### Runtime config editor
+`SettingsManager` exposes `GET`/`POST /api/v1/config` for live configuration. The view returns a redacted config dump, the sorted runtime-editable whitelist (`EDITABLE`), and `restart_required_for` key patterns. `set()` validates the new value against the runtime Pydantic models (so invalid values — e.g. an unknown `mesh.forward_policy.mode`, now a `Literal` — are rejected with 400), then atomically rewrites the YAML with a `.bak` snapshot and `chmod 0o600` and mutates the in-memory config in place, so most keys (including `mesh.helper_key`, read live by the relay gate) apply immediately without a restart. The Web Console renders the editor as a type-aware form with secret fields masked and restart-only keys shown read-only. Read scope is `config.read` (developer/administrator/super); write scope is `config.write` (administrator/super).
 
 ## Preferred execution ladder
 

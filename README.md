@@ -1,4 +1,4 @@
-# AgentNode 3.2
+# AgentNode 3.3
 
 **Give AI agents a real computer, not just a shell.**
 
@@ -80,6 +80,27 @@ and tasks can be **handed off (转交)** between nodes under a configurable poli
 `agentnode mesh-forward --target <node> --command 'cmd'` triggers a hand-off from
 the CLI; `--no-forwardable` marks the task as not re-transferable and `--mode`
 overrides the relay policy for that task.
+
+## Runtime config editor (3.3.0)
+
+The Web Console Config tab is now a live, type-aware editor over the
+runtime-editable configuration surface:
+
+- Each editable key gets a matching widget — text, number, boolean or enum
+  (e.g. `mesh.forward_policy.mode` is a dropdown of `off` / `offload` /
+  `distribute`).
+- Secret values (`mesh.helper_key`) render as masked password fields; leaving one
+  empty saves nothing, so the running secret is never exposed in the UI.
+- Settings that need a config-file edit + service restart (`host`, `port`,
+  `data_dir`, `http.*`, `auth.*`, `mesh.peers`, ...) are shown in a read-only
+  "Requires restart" section instead of being editable.
+- Saving validates the value against the runtime model (invalid values → 400),
+  persists to the YAML atomically with a `.bak` snapshot, and applies the change
+  live — no restart. `mesh.helper_key` in particular takes effect on relay gating
+  immediately.
+- The editor is behind RBAC: viewing needs `config.read`
+  (developer/administrator/super), saving needs `config.write`
+  (administrator/super). A raw redacted JSON view is available for audit.
 
 ## New in 3.2
 

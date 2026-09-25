@@ -388,7 +388,11 @@ def create_app(config_path:str|None=None):
         require(p,'config.read'); return settings.view()
     @app.post('/api/v1/config')
     async def config_set(req:ConfigSet,p:Principal=Depends(principal_dep)):
-        require(p,'config.write'); return settings.set(req.key,req.value)
+        require(p,'config.write')
+        try:
+            return settings.set(req.key,req.value)
+        except (KeyError,ValueError) as e:
+            raise HTTPException(400,str(e))
 
     if mcp is not None:
         def mp():

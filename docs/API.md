@@ -104,4 +104,19 @@ CLI: `agentnode mesh-forward --target <node> [--command 'cmd'|--prompt '...'] [-
 - `GET /api/v1/usage`
 - `GET/POST /api/v1/config`
 
+### Config
+`GET /api/v1/config` returns `{config, editable, restart_required_for}` — the full
+config dump with secrets redacted (`***`), the sorted runtime-editable key whitelist
+(shell/files/desktop/mesh/office/agent/browser leaves, e.g. `mesh.helper_key`,
+`mesh.forward_policy.mode`), and the key patterns that need a file edit + service
+restart (`host`, `port`, `data_dir`, `http.*`, `auth.*`, `mesh.peers`, ...).
+
+`POST /api/v1/config` with `{"key": ..., "value": ...}` validates the value against
+the runtime model (invalid keys → `400`, invalid values — including an unknown
+`mesh.forward_policy.mode` — → `400`), writes the YAML atomically with a `.bak`
+snapshot and applies the change live without restart. Secret keys are masked in
+`GET`; a write with an empty value is ignored. Scopes: read = `config.read`
+(developer/administrator/super), write = `config.write` (administrator/super).
+The Web Console renders this as a type-aware editor.
+
 Remote Streamable HTTP MCP is mounted at `/mcp`; local stdio MCP is available with `agentnode mcp-stdio`.

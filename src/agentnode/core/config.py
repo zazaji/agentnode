@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os, secrets, hashlib
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, Field
 
@@ -19,7 +19,7 @@ class FilesConfig(BaseModel):
 class DesktopConfig(BaseModel):
     enabled:bool=True; ocr_provider:str="auto"; screenshot_dir:str="data/screenshots"; use_worker_on_windows:bool=True; worker_pipe:str=r"\\.\pipe\AgentNodeDesktop"; worker_secret:str=""
 class ForwardPolicy(BaseModel):
-    mode:str="off"                      # off | offload | distribute
+    mode:Literal["off","offload","distribute"]="off"   # relay strategy
     offload_after:int=3                 # offload: hand task off when >N in-flight requests
     max_forwards:int=3                  # relay budget: max forward hops for a task
 class MeshConfig(BaseModel):
